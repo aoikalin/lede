@@ -1,25 +1,27 @@
-# 
+# openwrt-ci.yml - Orange Pi R1 Plus LTS, coolsnowwolf/lede (patched)
+# 用法: 覆盖 fork 的 lede 仓库里 .github/workflows/openwrt-ci.yml
+# 改动只有两处, 其余和 lede 原版 workflow 一样:
+# 1. on: 加了 workflow_dispatch, 可以在 Actions 页面手动点 Run workflow,
+#    不用等每天 UTC 20:00 的定时任务.
+# 2. Update feeds 之前加了 Custom packages 一步, 跑 diy-part1.sh,
+#    把 HomeProxy 克隆到 package/homeproxy (它不能当 feed 用).
+# feeds.conf.default / .config / diy-part1.sh 要和这个文件一起提交到仓库根目录.
+#
 # <https://github.com/KFERMercer/OpenWrt-CI>
-#
-# Copyright (C) 2019 P3TERX
-#
-# Copyright (C) 2020 KFERMercer
 #
 name: OpenWrt-CI
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: 0 20 * * *
+    - cron: '0 20 * * *'
 
 permissions:
   contents: read
 
 jobs:
-
   build_openwrt:
-
     name: Build OpenWrt Firmware
-
     runs-on: ubuntu-22.04
 
     steps:
@@ -28,7 +30,6 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           docker image prune -f
-          sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
           sudo -E apt-mark hold grub-efi-amd64-signed
           sudo -E apt update
           sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
@@ -55,6 +56,11 @@ jobs:
           haskell: true
           large-packages: true
           swap-storage: true
+
+      - name: Custom packages (HomeProxy)
+        run: |
+          chmod +x diy-part1.sh
+          ./diy-part1.sh
 
       - name: Update feeds
         run: |

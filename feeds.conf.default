@@ -1,3 +1,14 @@
+# feeds.conf.default - Orange Pi R1 Plus LTS, coolsnowwolf/lede
+# 用法: 覆盖 fork 的 lede 仓库根目录的同名文件, 和 .config 一起提交.
+# 顺序有讲究, 不要打乱:
+# - PassWall 的两个源必须放顶部 (官方要求), 这样它的 sing-box / naiveproxy /
+#   xray-core / v2ray-core 会优先于 helloworld / packages 里的同名旧包.
+# - helloworld 是 lede 默认就开着的源, 提供 luci-app-ssr-plus / naiveproxy /
+#   v2ray-core / xray-core, 不用再加.
+# - OpenClash 放末尾 (官方要求加到文件最后).
+# - HomeProxy 不要写在这里, 它是单包仓库, 见 diy-part1.sh.
+src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
+src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
 src-git packages https://github.com/coolsnowwolf/packages.git
 #src-git luci https://github.com/coolsnowwolf/luci.git
 #src-git luci https://github.com/coolsnowwolf/luci.git;openwrt-23.05
@@ -11,3 +22,4 @@ src-git helloworld https://github.com/fw876/helloworld.git
 #src-git targets https://github.com/openwrt/targets.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed
+src-git openclash https://github.com/vernesong/OpenClash.git
